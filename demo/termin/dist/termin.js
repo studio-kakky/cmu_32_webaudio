@@ -8,6 +8,7 @@ var Delay = (function () {
 	function Delay(ctx) {
 		_classCallCheck(this, Delay);
 
+		this._isOn = true;
 		this._ctx = ctx;
 		this._input = this._ctx.createGain();
 		this._dry = this._ctx.createGain();
@@ -31,18 +32,58 @@ var Delay = (function () {
 	}
 
 	_createClass(Delay, {
+		turn: {
+			value: function turn() {
+				this._isOn = !this._isOn;
+				if (this._isOn) {
+					this._turnon();
+				} else {
+					this._turnoff();
+				}
+			}
+		},
+		_turnoff: {
+			value: function _turnoff() {
+				this._input.disconnect();
+				this._input.connect(this._gain);
+			}
+		},
+		_turnon: {
+			value: function _turnon() {
+				this._input.disconnect();
+				this._input.connect(this._delay);
+				this._input.connect(this._dry);
+			}
+		},
 		initSetting: {
 			value: function initSetting() {
 				this._delay.delayTime.value = 0.2;
 				this._feedback.gain.value = 0.5;
 				this._wet.gain.value = 0.3;
 				this._dry.gain.value = 0.7;
-				this.gain = 0.7;
+				this._input.gain.value = 10;
+				this.gain = 10;
 			}
 		},
 		connect: {
 			value: function connect(node) {
 				this._gain.connect(node);
+			}
+		},
+		delayTime: {
+			get: function () {
+				return this._delay.delayTime.value;
+			},
+			set: function (value) {
+				this._delay.delayTime.value = value;
+			}
+		},
+		feedback: {
+			get: function () {
+				return this._feedback.gain.value;
+			},
+			set: function (value) {
+				this._feedback.gain.value = value;
 			}
 		},
 		input: {
@@ -88,12 +129,15 @@ var Distortion = (function () {
 	function Distortion(ctx) {
 		_classCallCheck(this, Distortion);
 
+		this._isOn = true;
 		this._ctx = ctx;
-		this._input = this._ctx.createWaveShaper();
+		this._input = this._ctx.createGain();
+		this._effectnode = this._ctx.createWaveShaper();
 		this._gain = this._ctx.createGain();
-		this._input.connect(this._gain);
-		this.gain = 0.3;
-		this._input.curve = this._createCurve();
+		this._input.connect(this._effectnode);
+		this._effectnode.connect(this._gain);
+		this.gain = 0.1;
+		this._effectnode.curve = this._createCurve();
 	}
 
 	_createClass(Distortion, {
@@ -110,6 +154,31 @@ var Distortion = (function () {
 					curves[i] = (1 + k) * x / (1 + k * Math.abs(x));
 				}
 				return curves;
+			}
+		},
+		turn: {
+			value: function turn() {
+				this._isOn = !this._isOn;
+				if (this._isOn) {
+					this._turnon();
+				} else {
+					this._turnoff();
+				}
+			}
+		},
+		_turnoff: {
+			value: function _turnoff() {
+				this._input.disconnect();
+				this._effectnode.disconnect();
+				this._input.connect(this._gain);
+			}
+		},
+		_turnon: {
+			value: function _turnon() {
+				this._input.disconnect();
+				this._effectnode.disconnect();
+				this._input.connect(this._effectnode);
+				this._effectnode.connect(this._gain);
 			}
 		},
 		connect: {
@@ -264,59 +333,6 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-var LeapController = (function () {
-	function LeapController() {
-		_classCallCheck(this, LeapController);
-
-		this._rightHand = {};
-		this._leftHand = {};
-	}
-
-	_createClass(LeapController, {
-		startTracking: {
-			value: function startTracking() {
-				var _this = this;
-
-				Leap.loop(function (frame) {
-					var l = frame.hands.length;
-					if (l > 2) l = 2;
-					for (var i = 0; i < l; i++) {
-						_this.setData(frame.hands[i]);
-					}
-				});
-			}
-		},
-		setData: {
-			value: function setData(data) {
-
-				if (data.isRigth) {
-					console.log(data);
-					this._rightHand = data;
-				} else if (data.isLeft) {
-					this._leftHand = data;
-				}
-			}
-		},
-		leftHand: {
-			get: function () {
-				return this._leftHand;
-			}
-		},
-		rightHand: {
-			get: function () {
-				return this._rightHand;
-			}
-		}
-	});
-
-	return LeapController;
-})();
-"use strict";
-
-var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
-
 var SoundBox = (function () {
 	function SoundBox(ctx) {
 		var freq = arguments[1] === undefined ? 440 : arguments[1];
@@ -329,11 +345,9 @@ var SoundBox = (function () {
 			this._ctx = ctx;
 			this._node1 = this._ctx.createOscillator();
 			this._node2 = this._ctx.createOscillator();
-			this._node3 = this._ctx.createOscillator();
 
 			this._node1Gain = this._ctx.createGain();
 			this._node2Gain = this._ctx.createGain();
-			this._node3Gain = this._ctx.createGain();
 
 			this._lfo = this._ctx.createOscillator();
 			this._vcf = this._ctx.createBiquadFilter();
@@ -345,28 +359,21 @@ var SoundBox = (function () {
 
 			this._node1.connect(this._node1Gain);
 			this._node2.connect(this._node2Gain);
-			this._node3.connect(this._node3Gain);
 
 			this._node1Gain.connect(this._vcf);
 			this._node2Gain.connect(this._vcf);
-			this._node3Gain.connect(this._vcf);
 
-			this._lfo.connect(this._node1.detune);
-			this._lfo.connect(this._node2.detune);
-			this._lfo.connect(this._node3.detune);
+			this._lfo.connect(this._node1.frequency);
+			this._lfo.connect(this._node2.frequency);
 			this._lfo.connect(this._vcf.detune);
 			this._vcf.connect(this._vcfGain);
 			this._vcfGain.connect(this._controleGain);
 			this._controleGain.connect(this._masterGain);
 
 			this._node2.type = "sawtooth";
-			this._node3.type = "square";
-			this._node2Gain.gain.value = 0;
-			this._node3Gain.gain.value = 0;
 
 			this._node2.detune.value = -35;
-			this._node3.detune.value = -35;
-			this._lfo.frequency.value = 1000;
+			this._lfo.frequency.value = 10000;
 			this._vcf.frequency.value = 50;
 
 			this._baseFrequency = freq;
@@ -384,7 +391,6 @@ var SoundBox = (function () {
 			value: function start() {
 				this._node1.start();
 				this._node2.start();
-				this._node3.start();
 				this._lfo.start();
 			}
 		},
@@ -405,7 +411,6 @@ var SoundBox = (function () {
 			set: function (value) {
 				this._node1.frequency.value = value;
 				this._node2.frequency.value = value;
-				this._node3.frequency.value = value;
 			},
 			get: function () {
 				return this._node1.frequency.value;
@@ -444,7 +449,7 @@ var Termin = (function (_SoundBox) {
   function Termin(ctx, targetElem) {
     var freq = arguments[2] === undefined ? 440 : arguments[2];
     var gain = arguments[3] === undefined ? 0.5 : arguments[3];
-    var octabeDistance = arguments[4] === undefined ? 150 : arguments[4];
+    var octabeDistance = arguments[4] === undefined ? 100 : arguments[4];
 
     _classCallCheck(this, Termin);
 
@@ -510,6 +515,7 @@ var Termin = (function (_SoundBox) {
     },
     setGain: {
       value: function setGain(distance) {
+        if (distance > 0.05) distance = 0.05;
         this.gain = distance;
       }
     }
@@ -517,6 +523,59 @@ var Termin = (function (_SoundBox) {
 
   return Termin;
 })(SoundBox);
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+var LeapController = (function () {
+	function LeapController() {
+		_classCallCheck(this, LeapController);
+
+		this._rightHand = {};
+		this._leftHand = {};
+	}
+
+	_createClass(LeapController, {
+		startTracking: {
+			value: function startTracking() {
+				var _this = this;
+
+				Leap.loop(function (frame) {
+					var l = frame.hands.length;
+					if (l > 2) l = 2;
+					for (var i = 0; i < l; i++) {
+						_this.setData(frame.hands[i]);
+					}
+				});
+			}
+		},
+		setData: {
+			value: function setData(data) {
+
+				if (data.isRigth) {
+					console.log(data);
+					this._rightHand = data;
+				} else if (data.isLeft) {
+					this._leftHand = data;
+				}
+			}
+		},
+		leftHand: {
+			get: function () {
+				return this._leftHand;
+			}
+		},
+		rightHand: {
+			get: function () {
+				return this._rightHand;
+			}
+		}
+	});
+
+	return LeapController;
+})();
 "use strict";
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
@@ -594,7 +653,7 @@ var Main = (function () {
         this.distortion.connect(this.delay.input);
         this.delay.connect(this.audioContext.destination);
         //this.soundBox.connect(this.audioContext.destination);
-        this.termin.gain = 0.01;
+        this.termin.gain = 0.005;
         this.termin.start();
       }
     },
@@ -632,7 +691,7 @@ var Main = (function () {
             hand = frame.hands[i];
             data = {
               rotation: new THREE.Vector3(hand.pitch(), hand.roll() * -1, hand.yaw() * -1),
-              position: new THREE.Vector3(hand.palmPosition[0] * _this.scale, hand.palmPosition[2] * _this.scale * -1, (hand.palmPosition[1] - 30) * _this.scale)
+              position: new THREE.Vector3(hand.palmPosition[0] * _this.scale, hand.palmPosition[2] * _this.scale * -1, (hand.palmPosition[1] - 80) * _this.scale)
             };
             if (hand.type == "left") {
               _this.events.trigger(_this.UPDATE_LEFT, data);

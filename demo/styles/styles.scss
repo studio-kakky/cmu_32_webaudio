@@ -85,3 +85,48 @@ body {
   font-weight: bold;
   text-align: center;
 }
+
+.synthe {
+  width: 400px;
+  margin:0 auto;
+}
+
+.synthe-pads {
+  display: table;
+  width: 100%;
+  border-spacing: 5px;
+  margin: 0;
+  padding: 0;
+}
+
+.synthe-pad {
+  display: table-cell;
+  width:25%;
+  height:94px;
+  background-color: rgba(0,255,0,0.3);
+  border: 1px solid #00ff00;
+}
+
+.effector {
+  display: table;
+  width:300px;
+  margin: 0 auto;
+  border-spacing: 10px;
+}
+
+.toggleBtn {
+  display: table-cell;
+  width:50%;
+  height:50px;
+  font-size: 0.8em;
+  font-weight: bold;
+  vertical-align: middle;
+  text-align: center;
+  color: #fff;
+  background-color: #777;
+  border-radius: 10px;
+}
+
+.toggleBtn--on {
+  background-color: #ee5400;
+}

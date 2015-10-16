@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="js/lib.js"></script>
+<script type="text/javascript" src="js/demo.js"></script>
+<link rel="stylesheet" href="css/styles.css">
+<title>シンプルシンセ</title>
+</head>
+<body>
+<div class="effector">
+  <div class="toggleBtn" id="turnoff_delay">ディレイ</div>
+  <div class="toggleBtn" id="turnoff_distortion">ディストーション</div>
+</div>
+<div class="synthe" id="synthe"></div>
+
+
+
+<script>
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+var context = new AudioContext();
+var synthe = new SynmpleSynthe(context);
+var volume = context.createGain();
+
+var distortion = new Distortion( context )
+var delay = new Delay( context );
+
+synthe.connect(distortion.input);
+distortion.connect(delay.input)
+delay.connect(volume);
+volume.connect(context.destination);
+
+delay.turn();
+distortion.turn();
+
+var counter = 0;
+for(var i = 0; i < 2;i++){
+  var ul = $('<ul>').addClass('synthe-pads');
+  for(var j = 0; j < 4; j++) {
+    ul.append('<li class="synthe-pad" id="pad_'+ counter +'"></li>');
+    counter++;
+  }
+  $("#synthe").append(ul);
+  console.log(counter);
+}
+
+var note = [0,2,4,5,7,9,11,12];
+var noteName = ['C','D','E','F','G','A','B','C']
+
+var pads = $('.synthe-pad')
+for(var i = 0, l = pads.length; i < l; i++) {
+  var pad = $(pads[i]);
+  pad.click(function(e) {
+    var num = parseInt(this.id.replace('pad_', '') ,10);;
+    synthe.startNote(440*Math.pow(2, note[num]/12));
+  })
+}
+
+document.getElementById('turnoff_delay').addEventListener('click',function() {
+  delay.turn();
+  if( delay._isOn ) {
+    $(this).addClass('toggleBtn--on')
+  } else {
+    $(this).removeClass('toggleBtn--on')
+  }
+});
+
+document.getElementById('turnoff_distortion').addEventListener('click',function() {
+  distortion.turn();
+  if( distortion._isOn ) {
+    $(this).addClass('toggleBtn--on');
+    volume.gain.value = 0.3;
+  } else {
+    $(this).removeClass('toggleBtn--on')
+    volume.gain.value = 1;
+  }
+});
+
+</script>
+</body>
+</html>

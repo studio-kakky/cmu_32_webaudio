@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script type="text/javascript" src="lib/effector.js"></script>
 <script type="text/javascript" src="js/lib.js"></script>
 <script type="text/javascript" src="js/demo.js"></script>
 <link rel="stylesheet" href="css/styles.css">
-<title>お返事ボックス</title>
+<title>リアルタイム編集</title>
 </head>
 <body>
 <div class="ohenzi">
@@ -25,14 +26,28 @@
   </div>
 </div>
 
+<div id="turnoff_delay">ディレイオフ
+</div>
+
+<div id="turnoff_distortion">ディストーション
+</div>
+
+
 <script>
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var context = new AudioContext();
 var soundBox = new SoundBox(context);
 
+var distortion = new Distortion( context )
+distortion.gain = 0.01;
+var delay = new Delay( context );
 
+delay.delayTime = 0.5;
 
-soundBox.connect(context.destination);
+soundBox.connect( distortion.input );
+distortion.connect( delay.input );
+delay.connect( context.destination );
+
 soundBox.loadSound('data/fuun.aac',81,document.getElementById('btn1'),0.92);
 soundBox.loadSound('data/naruhodo.aac',87,document.getElementById('btn2'),0.92);
 soundBox.loadSound('data/he.aac',69,document.getElementById('btn3'),0.92);
@@ -42,6 +57,14 @@ soundBox.loadSound('data/he.aac',68,document.getElementById('btn6'),1);
 soundBox.loadSound('data/fuun.aac',90,document.getElementById('btn7'),1.07);
 soundBox.loadSound('data/naruhodo.aac',88,document.getElementById('btn8'),1.07);
 soundBox.loadSound('data/he.aac',67,document.getElementById('btn9'),1.07);
+
+document.getElementById('turnoff_delay').addEventListener('click',function() {
+  delay.turn();
+});
+
+document.getElementById('turnoff_distortion').addEventListener('click',function() {
+  distortion.turn();
+});
 </script>
 </body>
 </html>

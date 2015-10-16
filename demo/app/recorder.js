@@ -6,6 +6,7 @@ class Recorder {
     this.bufferSize = 2048;
     this.soundContainer = [];
     this.recordedData = [];
+    this._gainNode = this.ctx.createGain();
 
     this.scriptProccessr = this.ctx.createScriptProcessor(this.bufferSize, 1, 1);
   }
@@ -58,6 +59,7 @@ class Recorder {
   }
 
   playRecordedVoice() {
+    console.log(this.soundContainer);
     var buf = this.ctx.createBuffer(1, this.soundContainer.length * this.bufferSize, this.ctx.sampleRate);
     var channel = buf.getChannelData(0);
 
@@ -68,8 +70,20 @@ class Recorder {
     }
     var src = this.ctx.createBufferSource();
     src.buffer = buf;
-    src.connect(this.ctx.destination);
+    src.connect(this._gainNode);
     src.start(0);
+  }
+
+  connect(node) {
+    this._gainNode.connect(node);
+  }
+
+  get gain() {
+    return this._gainNode.gain;
+  }
+
+  set gain(value) {
+    this._gainNode.gain.value = value;
   }
 
 }

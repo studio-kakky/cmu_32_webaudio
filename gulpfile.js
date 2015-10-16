@@ -35,7 +35,7 @@ gulp.task('copy:img', function() {
 });
 
 gulp.task('build:demo', function() {
-  return gulp.src(['demo/**/*.js'])
+  return gulp.src(['demo/app/*.js'])
     .pipe(babel())
     .pipe(concat('demo.js'))
     .pipe(gulp.dest(DESTDIR + 'demo/js/'));
@@ -48,7 +48,11 @@ gulp.task('style:demo', function() {
 });
 
 gulp.task('lib:demo', function() {
-  return gulp.src(['bower_components/jquery/dist/jquery.min.js','bower_components/underscore/underscore-min.js','bower_components/backbone/backbone-min.js'])
+  return gulp.src([
+      'bower_components/jquery/dist/jquery.min.js',
+      'bower_components/underscore/underscore-min.js',
+      'bower_components/backbone/backbone-min.js'
+    ])
     .pipe(concat('lib.js'))
     .pipe(gulp.dest(DESTDIR + 'demo/js'));
 });
@@ -58,7 +62,17 @@ gulp.task('copy:demo_sound', function(cb){
     .pipe(gulp.dest(DESTDIR + 'demo/data'),cb);
 });
 
-gulp.task('copy:demo', ['build:demo','style:demo','lib:demo','copy:demo_sound'], function(cb) {
+gulp.task('copy:demo_js', function(cb){
+  return gulp.src('demo/lib/*.js')
+    .pipe(gulp.dest(DESTDIR + 'demo/lib'),cb);
+});
+
+gulp.task('copy:termin',function(cb) {
+  return gulp.src('demo/termin/**/*.*')
+    .pipe(gulp.dest(DESTDIR + 'demo/termin'),cb);
+});
+
+gulp.task('copy:demo', ['build:demo','style:demo','lib:demo','copy:demo_sound','copy:termin','copy:demo_js'], function(cb) {
   return gulp.src(['demo/static/*.html',])
     .pipe(gulp.dest(DESTDIR + 'demo/'),cb);
 });

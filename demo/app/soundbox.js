@@ -4,6 +4,7 @@ class SoundBox {
     this.keybind = {};
     this.ctx = ctx;
     this.output = this.ctx.createGain();
+    this.output.gain.value = 4;
     this.events = {};
     _.extend(this.events,Backbone.Events);
     this.events.listenTo(this.events, this.ONLOAD_BUFFER, (data)=>{

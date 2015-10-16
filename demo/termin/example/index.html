@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="../bower_components/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" src="../bower_components/three.js/three.min.js"></script>
+<script type="text/javascript" src="../bower_components/underscore/underscore-min.js"></script>
+<script type="text/javascript" src="../bower_components/backbone/backbone-min.js"></script>
+<script type="text/javascript" src="../bower_components/leapjs/leap-0.6.4.min.js"></script>
+<script type="text/javascript" src="../dist/termin.js"></script>
+<title>hand sample</title>
+<style>
+body { margin: 0; }
+.canvas { width: 100%; height: 100% }
+
+.note-guide {
+  top:20px;
+  left:20px;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  overflow: hidden;
+}
+
+.noge-guide__indicator {
+  float:left;
+  list-style-type:none;
+  margin-right: 5px;
+}
+
+.note-guide_notemark-wrapper {
+  background-color: #ccc;
+  width:15px;
+  height:20px;
+}
+
+.note-guide__notemark {
+  display: block;
+  width:15px;
+  height:20px;
+  background-color: #00ff00;
+  opacity: 0;
+}
+
+.note-guide__notename {
+  display: inline-block;
+  width: 15px;
+  color:#fff;
+  font-size:0.5em;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+<div class="noteGuide" id="noteGuid"></div>
+<div class="canvas" id="mainCanvas"></div>
+<script>
+
+var _main = new Main(document.getElementById('mainCanvas'));
+
+/**
+$(window).ready(function() {
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+  var renderer = new THREE.WebGLRenderer();
+  renderer.setSize( window.innerWidth, window.innerHeight );
+  document.body.appendChild( renderer.domElement );
+
+  camera.position.set(0,-100,100);
+  camera.lookAt({x:0,y:80,z:0});
+
+  var groundGeo = new THREE.PlaneGeometry( 2000, 2000, 100, 100 );
+  var groundMaterial = new THREE.MeshBasicMaterial( {color: 0x222222, wireframe: true} );
+  var ground = new THREE.Mesh(groundGeo, groundMaterial)
+
+  scene.add(ground);
+
+
+  axis = new THREE.AxisHelper(1000);
+  axis.position.set(0,0,0);
+  scene.add(axis);
+
+  var leftHand = new Hand(false);
+  leftHand.position.set(-15,-5,0);
+  //leftHand.scale.set(2,2,2);
+
+  var rightHand = new Hand(true);
+  rightHand.position.set(15,-5,0);
+  //rightHand.scale.set(2,2,2);
+
+  scene.add(leftHand, rightHand);
+
+
+  Leap.loop((frame)=>{
+    var baseBoneRotation = (new THREE.Quaternion).setFromEuler(
+      new THREE.Euler(0, Math.PI / 2, 0)
+    );
+    var hand;
+    var targetHandObject;
+    scale = 0.7
+    var direction;
+    for(var i = 0, l = frame.hands.length; i < l; i++){
+      hand = frame.hands[i]
+
+      targetHandObject = (hand.type == 'left') ? leftHand : rightHand;
+      targetHandObject.position.set(
+        hand.palmPosition[0] * scale,
+        hand.palmPosition[2] * scale * -1,
+        (hand.palmPosition[1] - 30) * scale
+      );
+
+
+
+      direction = (hand.type == 'left') ? -1 : 1;
+
+      targetHandObject.rotation.set(hand.pitch(), hand.roll() * -1 , hand.yaw() * -1);
+    }
+  })
+
+  setInterval(function(){
+    renderer.render(scene, camera);
+  },60)
+})
+*/
+</script>
+</body>
+</html>

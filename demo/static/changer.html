@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script type="text/javascript" src="lib/effector.js"></script>
 <script type="text/javascript" src="js/lib.js"></script>
 <script type="text/javascript" src="js/demo.js"></script>
 <link rel="stylesheet" href="css/styles.css">
-<title>録音</title>
+<title>波形</title>
 </head>
 <body>
+
+<div class="effector">
+  <div class="toggleBtn" id="turnoff_delay">ディレイ</div>
+  <div class="toggleBtn" id="turnoff_distortion">ディストーション</div>
+</div>
 <div class="rokuon">
   <div class="rokuon-btns">
     <div class="rokuon-btns__item" id="btn1"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:30px;height:30px"><style type="text/css">.st0{fill:#fff;}</style><g fill="#fff"><path class="st0" d="M401.013 218.24v26.71c-.012 40.006-16.224 76.154-42.518 102.482-26.33 26.294-62.477 42.518-102.484 42.53-40.018-.012-76.165-16.236-102.494-42.53-26.295-26.329-42.519-62.476-42.53-102.482v-26.71h-35.398v26.71c.034 91.502 68.445 167.044 156.824 178.682v88.368h47.197v-88.368c88.368-11.638 156.766-87.18 156.802-178.682v-26.71h-35.399zM256.011 325.067c44.201-.012 80.106-35.928 80.117-80.117v-164.821c-.01-44.201-35.916-80.117-80.117-80.129-44.201.012-80.117 35.928-80.129 80.129v164.821c.012 44.189 35.928 80.105 80.129 80.117z"/></g></svg></div>
@@ -16,12 +22,30 @@
 </div>
 <div class="record-cd" id="countdown"></div>
 
+
+
 <script>
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var context = new AudioContext();
 var recorder = new Recorder(context);
-recorder.connect(context.destination);
-recorder.gain = 4;
+
+
+var gainNode = context.createGain();
+var output = context.createGain();
+var distortion = new Distortion( context )
+var delay = new Delay( context );
+
+delay.delayTime = 0.5;
+
+recorder.connect(gainNode);
+gainNode.connect( distortion.input );
+distortion.connect( delay.input );
+delay.connect( output );
+output.connect( context.destination );
+
+delay.turn();
+distortion.turn();
+
 var btn1 = document.getElementById('btn1');
 var btn2 = document.getElementById('btn2');
 var btn3 = document.getElementById('btn3');
@@ -39,6 +63,23 @@ btn3.addEventListener('click',function(){
 })
 
 
+document.getElementById('turnoff_delay').addEventListener('click',function() {
+  delay.turn();
+  if( delay._isOn ) {
+    $(this).addClass('toggleBtn--on')
+  } else {
+    $(this).removeClass('toggleBtn--on')
+  }
+});
+
+document.getElementById('turnoff_distortion').addEventListener('click',function() {
+  distortion.turn();
+  if( distortion._isOn ) {
+    $(this).addClass('toggleBtn--on')
+  } else {
+    $(this).removeClass('toggleBtn--on')
+  }
+});
 </script>
 </body>
 </html>

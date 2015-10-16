@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="js/lib.js"></script>
+<script type="text/javascript" src="js/demo.js"></script>
+<title>hand sample</title>
+</head>
+<body>
+<script>
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+var context = new AudioContext();
+var soundBox = new SoundBox(context);
+soundBox.loadSound('data/fuun.aac',81);
+soundBox.loadSound('data/naruhodo.aac',87);
+soundBox.loadSound('data/he.aac',69);
+</script>
+</body>
+</html>

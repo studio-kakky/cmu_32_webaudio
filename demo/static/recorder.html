@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="js/lib.js"></script>
+<script type="text/javascript" src="js/demo.js"></script>
+<link rel="stylesheet" href="css/styles.css">
+<title>録音</title>
+</head>
+<body>
+<div class="rokuon">
+  <div class="rokuon-btns">
+    <div class="rokuon-btns__item" id="btn1"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:30px;height:30px"><style type="text/css">.st0{fill:#fff;}</style><g fill="#fff"><path class="st0" d="M401.013 218.24v26.71c-.012 40.006-16.224 76.154-42.518 102.482-26.33 26.294-62.477 42.518-102.484 42.53-40.018-.012-76.165-16.236-102.494-42.53-26.295-26.329-42.519-62.476-42.53-102.482v-26.71h-35.398v26.71c.034 91.502 68.445 167.044 156.824 178.682v88.368h47.197v-88.368c88.368-11.638 156.766-87.18 156.802-178.682v-26.71h-35.399zM256.011 325.067c44.201-.012 80.106-35.928 80.117-80.117v-164.821c-.01-44.201-35.916-80.117-80.117-80.129-44.201.012-80.117 35.928-80.129 80.129v164.821c.012 44.189 35.928 80.105 80.129 80.117z"/></g></svg></div>
+    <div class="rokuon-btns__item" id="btn2"><span class="icon-stop"></span></div>
+    <div class="rokuon-btns__item" id="btn3"><svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" style="width:40px;height:40px"><style type="text/css">.st0{fill:#fff;}</style><g fill="#fff"><path class="st0" d="M207.063 167.141c-1.031-.609-2.344-.641-3.406-.031-1.031.594-1.688 1.719-1.688 2.938v171.89100000000002c0 1.234.656 2.344 1.688 2.938 1.063.625 2.375.594 3.406-.031l144-85.953c1.031-.594 1.641-1.703 1.641-2.906 0-1.172-.609-2.297-1.641-2.891l-144-85.955zM256 0c-141.375 0-256 114.625-256 256s114.625 256 256 256 256-114.625 256-256-114.625-256-256-256zm0 448c-105.875 0-192-86.125-192-192s86.125-192 192-192 192 86.125 192 192-86.125 192-192 192z"/></g></svg></div>
+  </div>
+</div>
+<div class="record-cd" id="countdown"></div>
+
+<script>
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+var context = new AudioContext();
+var recorder = new Recorder(context);
+var btn1 = document.getElementById('btn1');
+var btn2 = document.getElementById('btn2');
+var btn3 = document.getElementById('btn3');
+var _this = this;
+btn1.addEventListener('click',function() {
+  recorder.startRecord(document.getElementById('countdown'));
+})
+
+btn2.addEventListener('click',function(){
+  recorder.stopRecord(document.getElementById('countdown'));
+})
+
+btn3.addEventListener('click',function(){
+  recorder.playRecordedVoice();
+})
+
+
+</script>
+</body>
+</html>

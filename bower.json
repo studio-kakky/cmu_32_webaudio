@@ -1,0 +1,14 @@
+{
+  "name": "cmu-map",
+  "version": "1.0.0",
+  "authors": [
+    "柿内暢昌 <nob@studio-kakky.com>"
+  ],
+  "dependencies": {
+    "reveal.js": "~3.1.0",
+    "snap.svg": "~0.4.1",
+    "backbone": "~1.2.3",
+    "jquery": "~2.1.4"
+  },
+  "private": true
+}

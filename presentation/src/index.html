@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>WebAudio API + モーションセンサーでテルミンをつくる</title>
+
+		<meta name="description" content="Web Audio APIとLeap Motionでテルミン">
+		<meta name="author" content="studio-kakky">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="lib/reveal/css/reveal.css">
+		<link rel="stylesheet" href="lib/reveal/css/theme/black.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/reveal/lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal/css/print/pdf.css' : 'lib/reveal/css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+		<style>
+		span.small {
+			font-size:0.8em;
+		}
+		.reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+			text-transform:none;
+		}
+		</style>
+		<style>
+			.sequence {
+				overflow: hidden;
+			}
+			.sequence .sequence-item {
+				display: inline-block;
+				margin: 20px;
+			}
+			.sequence .sequence-item__caption {
+				font-size: 0.5em;
+			}
+		</style>
+	</head>
+
+	<body>
+<pre style="display:none"><code></code></pre>
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section data-markdown>
+    			<script type="text/template">
+						## WebAudio API + モーションセンサーでテルミンをつくる。
+						by スタジオカッキー
+					</script>
+				</section>
+				<section data-markdown>
+    			<script type="text/template">
+						###自己紹介
+
+						- Webのフロントエンドエンジニア
+						- フリーランス
+						- 昨年11月からなので、そろそろ1年です。
+						- FaceBook：本名で「柿内 暢昌」
+						- http://studio-kakky.com/
+
+					</script>
+				</section>
+				<section data-markdown>
+	    		<script type="text/template">
+						#### ちなみに
+
+						釣りが趣味で、こんなこともやってます。
+
+						![Buritsu おふねにのろう](img/img1.jpg "Buritsuという釣りメディア")
+
+					</script>
+				</section>
+
+				<section data-markdown>
+	    		<script type="text/template">
+						## 本日のテーマ
+					</script>
+				</section>
+
+				<section data-markdown>
+	    		<script type="text/template">
+						## Web Audio API
+						<p style="font-size:0.5em">とそれを使った楽器</p>
+					</script>
+				</section>
+
+				<section data-markdown>
+	    		<script type="text/template">
+						## コードの説明はしません。
+						https://github.com/studio-kakky/cmu_32_webaudio
+
+						↑あんまり整備してないけど、こちらを見てください。
+					</script>
+				</section>
+
+				<section data-markdown>
+	    		<script type="text/template">
+						## Web Audio APIって？
+					</script>
+				</section>
+
+
+				<section data-markdown>
+					<script type="text/template">
+						## ブラウザで音を扱うためのAPIです。
+					</script>
+				</section>
+
+				<section data-markdown>
+	    		<script type="text/template">
+						## &lt;audio&gt;
+						とは違います。
+					</script>
+				</section>
+
+
+				<section data-markdown>
+					<script type="text/template">
+						### audio 要素
+						一つの楽曲を単純に再生するなど、BGMむけ
+
+						### Web Audio API
+						音声ファイルを使って複雑な処理を行える
+						- ゲームのSEとか
+						- ブラウザで鳴らす楽器とか
+						- ボタン音とか
+					</script>
+				</section>
+
+				<section data-markdown>
+	    		<script type="text/template">
+						## できること
+						- 音をとり込む。
+						- 取り込んだ音を再生する。
+						- 音を解析する。
+						- 取り込んだ音の波形を編集する。
+						- 音を生成する。
+					</script>
+				</section>
+
+				<section data-markdown>
+	    		<script type="text/template">
+						## 音を取り込む
+					</script>
+				</section>
+
+				<section data-markdown>
+	    		<script type="text/template">
+						```
+						var xhr = new XMLHttpRequest();
+
+						xhr.onload = ()=> {
+							/* 省略
+							.
+							.
+							*/
+						}
+						xhr.open('GET', 'demo/data/fuun.aac', true);
+						xhr.responseType = 'arraybuffer';
+						xhr.send(null);
+						```
+						こんな感じで、XHRを使って読み込みます。
+					</script>
+				</section>
+
+				<section data-markdown>
+	    		<script type="text/template">
+						<div class="sequence">
+							<div class="sequence-item">
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:50px;height:50px"><style type="text/css">.st0{fill:#eee;}</style><g fill="#fff"><path class="st0" d="M378.409 0h-183.29000000000002l-9.314 9.314-128.789 128.788-9.314 9.314v278.68899999999996c0 47.361 38.528 85.896 85.896 85.896h244.811c47.36 0 85.888-38.535 85.888-85.896v-340.21c.001-47.367-38.528-85.895-85.888-85.895zm54.084 426.104c0 29.877-24.214 54.092-54.084 54.092h-244.811c-29.878 0-54.092-24.215-54.092-54.092v-265.513h83.717c24.885 0 45.07-20.179 45.07-45.07v-83.717h170.116c29.87 0 54.084 24.214 54.084 54.091v340.209zM288.59 223.362c-22.63-10.927-41.75-35.596-41.75-35.596v136.594c-7.062-2.598-15.417-3.365-24.029-1.704-20.674 3.972-34.908 20.283-31.801 36.412 3.107 16.136 22.382 25.988 43.052 22.001 18.356-3.533 31.605-16.786 32.174-31.015h.112v-103.428c59.377 7.254 49.623 49.281 45.517 61.604 34.22-38.332 16.422-65.709-23.275-84.868z"/></g></svg>
+								<p class="sequence-item__caption">音声ファイル(.acc,.mp3)とか</p>
+							</div>
+							<div class="sequence-item">
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:50px;height:50px"><style type="text/css">.st0{fill:#eee;}</style><path class="st0" d="M268.234 24.08c-22.883-21.777-59.085-20.883-80.861 2-21.787 22.904-20.894 59.116 2.01 80.883l96.511 91.84h-228.692c-31.596 0-57.202 25.596-57.202 57.203 0 31.596 25.606 57.192 57.202 57.192h228.691l-96.511 91.85c-22.904 21.756-23.797 57.979-2.01 80.862 21.776 22.883 57.978 23.798 80.861 2.011l243.767-231.915-243.766-231.926z" fill="#fff"/></svg>
+							</div>
+							<div class="sequence-item">
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:50px;height:50px"><style type="text/css">.st0{fill:#eee;}</style><path class="st0" d="M510.069 388.114v-384.846l-65.848 14.204-333.738 74.924h-.01v262.876c-12.625-1.872-26.132-1.332-39.711 2.03-48.156 11.924-78.972 54.796-68.83 95.756s57.403 64.499 105.559 52.575c48.156-11.924 78.972-54.796 68.83-95.756v-227.55l267.901-60.733v211.914c-12.625-1.872-26.132-1.332-39.712 2.03-48.156 11.924-78.972 54.796-68.83 95.756s57.403 64.499 105.559 52.575c48.156-11.923 78.972-54.794 68.83-95.755z" fill="#fff"/></svg>
+								<p class="sequence-item__caption">音声バッファーとしてメモリに保存</p>
+							</div>
+							<div class="sequence-item">
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:50px;height:50px"><style type="text/css">.st0{fill:#eee;}</style><path class="st0" d="M268.234 24.08c-22.883-21.777-59.085-20.883-80.861 2-21.787 22.904-20.894 59.116 2.01 80.883l96.511 91.84h-228.692c-31.596 0-57.202 25.596-57.202 57.203 0 31.596 25.606 57.192 57.202 57.192h228.691l-96.511 91.85c-22.904 21.756-23.797 57.979-2.01 80.862 21.776 22.883 57.978 23.798 80.861 2.011l243.767-231.915-243.766-231.926z" fill="#fff"/></svg>
+							</div>
+							<div class="sequence-item">
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:60px;height:60px"><style type="text/css">.st0{fill:#eee;}</style><g fill="#fff"><path class="st0" d="M0 225.197v61.608c0 16.152 13.094 29.248 29.246 29.248h49.549v-120.104h-49.549c-16.152 0-29.246 13.096-29.246 29.248zM110.314 316.053l133.717 76.61v-273.326l-133.717 76.612zM444.527 96l-20.449 20.084c36.508 35.856 59.117 85.287 59.117 139.881 0 54.595-22.609 104.098-59.117 139.952l.07.072 20.379 20.011c41.692-41.016 67.473-97.59 67.473-160.035 0-62.373-25.781-118.947-67.473-159.965zM393.547 146.068l-20.379 20.015c23.474 22.983 38.02 54.806 38.02 89.882 0 35.148-14.545 66.971-38.092 89.954l20.377 20.014c28.732-28.146 46.518-67.04 46.518-109.968-.001-42.926-17.786-81.75-46.444-109.897zM322.258 216.08c10.441 10.184 16.922 24.257 16.922 39.885 0 15.629-6.48 29.774-16.994 39.955l20.379 20.014c15.697-15.274 25.418-36.561 25.418-59.97 0-23.408-9.721-44.553-25.346-59.898l-20.379 20.014z"/></g></svg>
+								<p class="sequence-item__caption">再生</p>
+							</div>
+						</div>
+						Web Audio APIでは、読み込んだデータをデコードして再生します。
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						## なんでこんなことするの
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						## ざっくりいうと、早いからです。
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						### 単一の楽曲ファイル
+						→多少遅れても気にならない。読み込んでからデコードしても間に合う。
+
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						### 複数音声を同時にならして、一つの音楽にする。
+						→それぞれの再生タイミングがめちゃめちゃシビア。時間のかかるデコードを先にしてしまおう。
+					</script>
+				</section>
+				<section>
+					<section data-markdown>
+						<script type="text/template">
+							## それでは、音を取り込んでならしてみます。
+						</script>
+					</section>
+					<section>
+						<iframe src="demo/sound_box1.html" style="width:100%;height:800px"></iframe>
+					</section>
+					<section>
+						<iframe src="demo/sound_box2.html" style="width:100%;height:600px"></iframe>
+					</section>
+				</section>
+				<section data-markdown>
+					<script type="text/template">
+						##音はファイルだけでなくマイクからも取り込めます。
+					</script>
+				</section>
+				<section>
+					<section data-markdown>
+						<script type="text/template">
+							<div class="sequence">
+								<div class="sequence-item">
+									<img src="img/WebRTC.Logo_.jpg" width="150">
+									<p class="sequence-item__caption">Web RTCのマイク入力</p>
+								</div>
+								<div class="sequence-item">
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:50px;height:50px"><style type="text/css">.st0{fill:#eee;}</style><path class="st0" d="M268.234 24.08c-22.883-21.777-59.085-20.883-80.861 2-21.787 22.904-20.894 59.116 2.01 80.883l96.511 91.84h-228.692c-31.596 0-57.202 25.596-57.202 57.203 0 31.596 25.606 57.192 57.202 57.192h228.691l-96.511 91.85c-22.904 21.756-23.797 57.979-2.01 80.862 21.776 22.883 57.978 23.798 80.861 2.011l243.767-231.915-243.766-231.926z" fill="#fff"/></svg>
+								</div>
+								<div class="sequence-item">
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:50px;height:50px"><style type="text/css">.st0{fill:#eee;}</style><path class="st0" d="M510.069 388.114v-384.846l-65.848 14.204-333.738 74.924h-.01v262.876c-12.625-1.872-26.132-1.332-39.711 2.03-48.156 11.924-78.972 54.796-68.83 95.756s57.403 64.499 105.559 52.575c48.156-11.924 78.972-54.796 68.83-95.756v-227.55l267.901-60.733v211.914c-12.625-1.872-26.132-1.332-39.712 2.03-48.156 11.924-78.972 54.796-68.83 95.756s57.403 64.499 105.559 52.575c48.156-11.923 78.972-54.794 68.83-95.755z" fill="#fff"/></svg>
+									<p class="sequence-item__caption">音声バッファーとしてメモリに保存</p>
+								</div>
+								<div class="sequence-item">
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:50px;height:50px"><style type="text/css">.st0{fill:#eee;}</style><path class="st0" d="M268.234 24.08c-22.883-21.777-59.085-20.883-80.861 2-21.787 22.904-20.894 59.116 2.01 80.883l96.511 91.84h-228.692c-31.596 0-57.202 25.596-57.202 57.203 0 31.596 25.606 57.192 57.202 57.192h228.691l-96.511 91.85c-22.904 21.756-23.797 57.979-2.01 80.862 21.776 22.883 57.978 23.798 80.861 2.011l243.767-231.915-243.766-231.926z" fill="#fff"/></svg>
+								</div>
+								<div class="sequence-item">
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:60px;height:60px"><style type="text/css">.st0{fill:#eee;}</style><g fill="#fff"><path class="st0" d="M0 225.197v61.608c0 16.152 13.094 29.248 29.246 29.248h49.549v-120.104h-49.549c-16.152 0-29.246 13.096-29.246 29.248zM110.314 316.053l133.717 76.61v-273.326l-133.717 76.612zM444.527 96l-20.449 20.084c36.508 35.856 59.117 85.287 59.117 139.881 0 54.595-22.609 104.098-59.117 139.952l.07.072 20.379 20.011c41.692-41.016 67.473-97.59 67.473-160.035 0-62.373-25.781-118.947-67.473-159.965zM393.547 146.068l-20.379 20.015c23.474 22.983 38.02 54.806 38.02 89.882 0 35.148-14.545 66.971-38.092 89.954l20.377 20.014c28.732-28.146 46.518-67.04 46.518-109.968-.001-42.926-17.786-81.75-46.444-109.897zM322.258 216.08c10.441 10.184 16.922 24.257 16.922 39.885 0 15.629-6.48 29.774-16.994 39.955l20.379 20.014c15.697-15.274 25.418-36.561 25.418-59.97 0-23.408-9.721-44.553-25.346-59.898l-20.379 20.014z"/></g></svg>
+									<p class="sequence-item__caption">再生</p>
+								</div>
+							</div>
+						</script>
+					</section>
+					<section>
+						<iframe src="demo/recorder.html" style="width:100%;height:800px"></iframe>
+					</section>
+				</section>
+			</div>
+
+		</div>
+
+		<script src="lib/reveal/lib/js/head.min.js"></script>
+		<script src="lib/reveal/js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/reveal/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'lib/reveal/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'lib/reveal/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'lib/reveal/plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'lib/reveal/plugin/zoom-js/zoom.js', async: true },
+					{ src: 'lib/reveal/plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>

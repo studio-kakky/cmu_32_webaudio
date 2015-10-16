@@ -1,0 +1,22 @@
+{
+  "name": "CMU_MAP",
+  "version": "1.0.0",
+  "description": "CMU32の発表のコード等",
+  "scripts": {},
+  "private": true,
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "browser-sync": "^2.7.13",
+    "concat": "^1.0.0",
+    "event-stream": "^3.3.1",
+    "gulp": "^3.9.0",
+    "gulp-babel": "^5.2.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-jscs": "^1.6.0",
+    "gulp-replace": "^0.5.4",
+    "gulp-sass": "^2.0.4",
+    "run-sequence": "^1.1.1"
+  },
+  "author": "スタジオカッキー",
+  "license": "ISC"
+}

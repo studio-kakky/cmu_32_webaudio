@@ -1,0 +1,87 @@
+body {
+  margin: 0;
+  background-color: #222;
+  p {
+    margin: 0;
+  }
+}
+
+.ohenzi {
+  width:600px;
+  margin: 0px auto;
+}
+
+.ohenzi-btns {
+  display: table;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 20px;
+}
+
+.ohenzi-btns__item {
+  display: table-cell;
+  width:20%;
+  height:100px;
+  font-size: 1.2em;
+  font-weight: bold;
+  color:#fff;
+
+  vertical-align: middle;
+  text-align: center;
+  background-color: #000;
+}
+
+.ohenzi-btns--middle {
+  .ohenzi-btns__item {
+    background-color: #2a9c02;
+  }
+}
+
+.ohenzi-btns--high {
+  .ohenzi-btns__item {
+    background-color: #d99209;
+  }
+}
+
+.rokuon {
+  margin: 0 auto;
+  width:300px;
+  border-spacing: 20px;
+}
+
+.rokuon-btns {
+  display: table;
+  border-spacing: 20px;
+  width: 100%;
+}
+
+.rokuon-btns__item,
+.play-btn {
+  display: table-cell;
+  width: 33%;
+  height: 60px;
+  margin:10px;
+  border-radius: 5px;
+  background-color: #777;
+  vertical-align: middle;
+  text-align: center;
+  svg {
+    vertical-align: top;
+  }
+}
+
+.icon-stop {
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  vertical-align: top;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.record-cd {
+  font-size: 3em;
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+}

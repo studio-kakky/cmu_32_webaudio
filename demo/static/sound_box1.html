@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="js/lib.js"></script>
+<script type="text/javascript" src="js/demo.js"></script>
+<link rel="stylesheet" href="css/styles.css">
+<title>お返事ボックス</title>
+</head>
+<body>
+<div class="ohenzi">
+  <div class="ohenzi-btns">
+    <div class="ohenzi-btns__item" id="btn1">ふーん</div>
+    <div class="ohenzi-btns__item" id="btn2">なるほどー</div>
+    <div class="ohenzi-btns__item" id="btn3">へー</div>
+  </div>
+</div>
+
+<script>
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+var context = new AudioContext();
+var soundBox = new SoundBox(context);
+soundBox.connect(context.destination);
+soundBox.loadSound('data/fuun.aac',81,document.getElementById('btn1'),1);
+soundBox.loadSound('data/naruhodo.aac',87,document.getElementById('btn2'),1);
+soundBox.loadSound('data/he.aac',69,document.getElementById('btn3'),1);
+</script>
+</body>
+</html>

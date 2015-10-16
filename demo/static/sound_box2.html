@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="js/lib.js"></script>
+<script type="text/javascript" src="js/demo.js"></script>
+<link rel="stylesheet" href="css/styles.css">
+<title>お返事ボックス</title>
+</head>
+<body>
+<div class="ohenzi">
+  <div class="ohenzi-btns">
+    <div class="ohenzi-btns__item" id="btn1">ふーん</div>
+    <div class="ohenzi-btns__item" id="btn2">なるほどー</div>
+    <div class="ohenzi-btns__item" id="btn3">へー</div>
+  </div>
+  <div class="ohenzi-btns ohenzi-btns--middle">
+    <div class="ohenzi-btns__item" id="btn4">ふーん</div>
+    <div class="ohenzi-btns__item" id="btn5">なるほどー</div>
+    <div class="ohenzi-btns__item" id="btn6">へー</div>
+  </div>
+  <div class="ohenzi-btns ohenzi-btns--high">
+    <div class="ohenzi-btns__item" id="btn7">ふーん</div>
+    <div class="ohenzi-btns__item" id="btn8">なるほどー</div>
+    <div class="ohenzi-btns__item" id="btn9">へー</div>
+  </div>
+</div>
+
+<script>
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+var context = new AudioContext();
+var soundBox = new SoundBox(context);
+soundBox.connect(context.destination);
+soundBox.loadSound('data/fuun.aac',81,document.getElementById('btn1'),0.92);
+soundBox.loadSound('data/naruhodo.aac',87,document.getElementById('btn2'),0.92);
+soundBox.loadSound('data/he.aac',69,document.getElementById('btn3'),0.92);
+soundBox.loadSound('data/fuun.aac',65,document.getElementById('btn4'),1);
+soundBox.loadSound('data/naruhodo.aac',83,document.getElementById('btn5'),1);
+soundBox.loadSound('data/he.aac',68,document.getElementById('btn6'),1);
+soundBox.loadSound('data/fuun.aac',90,document.getElementById('btn7'),1.07);
+soundBox.loadSound('data/naruhodo.aac',88,document.getElementById('btn8'),1.07);
+soundBox.loadSound('data/he.aac',67,document.getElementById('btn9'),1.07);
+</script>
+</body>
+</html>
